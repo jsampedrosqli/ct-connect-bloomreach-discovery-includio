@@ -25,10 +25,6 @@ interface BloomreachDiscoveryProductAttrs {
   slug: string;
   price: number;
   image: string;
-  thumb_image: string; //mandatory discovery field
-  url: string; //mandatory discovery field
-  category_paths: Category[]; //mandatory discovery field
-  brand: string; //mandatory discovery field
 }
 
 interface Category {
@@ -106,12 +102,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
                 product.masterData.current.masterVariant.prices?.[0]?.value
                   .centAmount ?? 0,
               image:
-                product.masterData.current.masterVariant.images?.[0]?.url ?? '',
-              thumb_image:
-                  product.masterData.current.masterVariant.images?.[0]?.url ?? '',
-              url: 'www.example.com',
-              category_paths: [{"id":"999","name":"default"}],
-              brand: 'acme'
+                product.masterData.current.masterVariant.images?.[0]?.url ?? ''
             },
             variants: getVariants(product),
             views: getProductViews(product),
@@ -174,9 +165,6 @@ function getVariants(product: Product) {
   product.masterData.current.variants.forEach((variant) => {
     const attributesMap: Record<string, string> = {};
     variant.attributes?.forEach((attribute) => {
-      // if (attribute.value?.key) {
-      //   attributesMap[attribute.name] = attribute.value[readConfiguration().languageCode];
-      // }
       if (attribute.value.hasOwnProperty(languageCode)) {
         attributesMap[attribute.name] = attribute.value[languageCode];
       } else {
