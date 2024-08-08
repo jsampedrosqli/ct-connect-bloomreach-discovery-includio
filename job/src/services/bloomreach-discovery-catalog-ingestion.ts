@@ -1,5 +1,6 @@
 import Bottleneck from 'bottleneck';
 import {
+  CategoryReference,
   ClientResponse,
   Product,
   ProductPagedQueryResponse,
@@ -27,13 +28,13 @@ interface BloomreachDiscoveryProductAttrs {
   image: string;
   thumb_image: string; //mandatory discovery field
   url: string; //mandatory discovery field
-  category_paths: Category[]; //mandatory discovery field
+  category_paths: BrDiscoveryCategory[][]; //mandatory discovery field
   brand: string; //mandatory discovery field
 }
 
-interface Category {
-  id: string;
-  name: string;
+interface BrDiscoveryCategory {
+  id?: string;
+  name?: string;
 }
 
 interface BloomreachDiscoveryProductVariants {
@@ -74,6 +75,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
             withTotal: false,
             sort: 'id',
             where: params.lastId ? `id > "${params.lastId}"` : undefined,
+            expand: 'masterData.current.categories[*].ancestors[*]'
           },
         })
         .execute();
@@ -94,7 +96,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
       response?.body.results.map((product) => {
         return {
           op: 'add',
-          path: `/products/${product.id}`,
+          path: `/products/${product.key}`,
           value: {
             attributes: {
               title: product.masterData.current.name[locale] ?? '',
@@ -110,7 +112,8 @@ export async function bloomreachDiscoveryCatalogIngestion() {
               thumb_image:
                   product.masterData.current.masterVariant.images?.[0]?.url ?? '',
               url: 'www.example.com',
-              category_paths: [{"id":"999","name":"default"}],
+//              category_paths: [[{"id":"999","name":"default"}]],
+              category_paths: getCategoryTree(product.masterData.current.categories),
               brand: 'acme'
             },
             variants: getVariants(product),
@@ -192,4 +195,26 @@ function getVariants(product: Product) {
   });
 
   return variants;
+}
+
+function getCategoryTree(categories: CategoryReference[]) {
+  const brCategories: BrDiscoveryCategory[] = [];
+  const langCode = readConfiguration().bloomreachDiscoveryCatalogLocale;
+
+  if (Array.isArray(categories) && categories.length !== 0) {
+    brCategories[2] = {
+      id: categories?.[0].obj?.key,
+      name: categories?.[0].obj?.name[langCode]
+    }
+    brCategories[1] = {
+      id: categories?.[0].obj?.ancestors?.[1].obj?.key,
+      name: categories?.[0].obj?.ancestors?.[1].obj?.name[langCode]
+    }
+    brCategories[0] = {
+      id: categories?.[0].obj?.ancestors?.[0].obj?.key,
+      name: categories?.[0].obj?.ancestors?.[0].obj?.name[langCode]
+    }
+  }
+
+  return [brCategories];
 }
