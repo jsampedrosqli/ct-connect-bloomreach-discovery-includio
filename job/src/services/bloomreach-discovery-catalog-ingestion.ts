@@ -37,6 +37,10 @@ interface BrDiscoveryCategory {
   name?: string;
 }
 
+interface BloomreachDiscoveryProductVariant {
+  attributes: Record<string, string>;
+}
+
 interface BloomreachDiscoveryProductVariants {
   [key: string]: { attributes: Record<string, string> };
 }
@@ -94,6 +98,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
 
     const data: BloomreachProduct[] =
       response?.body.results.map((product) => {
+        const brVariant = getMasterVariant(product);
         return {
           op: 'add',
           path: `/products/${product.key}`,
@@ -111,10 +116,9 @@ export async function bloomreachDiscoveryCatalogIngestion() {
                 product.masterData.current.masterVariant.images?.[0]?.url ?? '',
               thumb_image:
                   product.masterData.current.masterVariant.images?.[0]?.url ?? '',
-              url: 'www.example.com',
-//              category_paths: [[{"id":"999","name":"default"}]],
+              url: getAttribute(brVariant, 'url'),
               category_paths: getCategoryTree(product.masterData.current.categories),
-              brand: 'acme'
+              brand: getAttribute(brVariant, 'brand')
             },
             variants: getVariants(product),
             views: getProductViews(product),
@@ -194,6 +198,29 @@ function getVariants(product: Product) {
   return variants;
 }
 
+function getMasterVariant(product: Product) {
+  let brVariant: BloomreachDiscoveryProductVariant;
+  const languageCode = readConfiguration().bloomreachDiscoveryCatalogLocale;
+  const variant = product.masterData.current.masterVariant;
+
+  const attributesMap: Record<string, string> = {};
+  variant.attributes?.forEach((attribute) => {
+    if (attribute.value.hasOwnProperty(languageCode)) {
+      attributesMap[attribute.name] = attribute.value[languageCode];
+    } else {
+      attributesMap[attribute.name] = attribute.value;
+    }
+  });
+
+  brVariant = {
+    attributes: {
+      ...attributesMap,
+    }
+  };
+
+  return brVariant;
+}
+
 function getCategoryTree(categories: CategoryReference[]) {
   const brCategories: BrDiscoveryCategory[] = [];
   const langCode = readConfiguration().bloomreachDiscoveryCatalogLocale;
@@ -214,4 +241,12 @@ function getCategoryTree(categories: CategoryReference[]) {
   }
 
   return [brCategories];
+}
+
+function getAttribute(variant: BloomreachDiscoveryProductVariant, attr: string) {
+  if (variant?.attributes?.hasOwnProperty(attr)) {
+    return variant.attributes[attr];
+  } else {
+    return '';
+  }
 }
