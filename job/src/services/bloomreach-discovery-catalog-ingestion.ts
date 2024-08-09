@@ -28,13 +28,17 @@ interface BloomreachDiscoveryProductAttrs {
   image: string;
   thumb_image: string; //mandatory discovery field
   url: string; //mandatory discovery field
-  category_paths: [BrDiscoveryCategory[]]; //mandatory discovery field
+  category_paths: BrDiscoveryCategory[][]; //mandatory discovery field
   brand: string; //mandatory discovery field
 }
 
 interface BrDiscoveryCategory {
   id?: string;
   name?: string;
+}
+
+interface BloomreachDiscoveryProductVariant {
+  attributes: Record<string, string>;
 }
 
 interface BloomreachDiscoveryProductVariants {
@@ -195,7 +199,7 @@ function getVariants(product: Product) {
 }
 
 function getMasterVariant(product: Product) {
-  const brVariant: BloomreachDiscoveryProductVariants = {};
+  let brVariant: BloomreachDiscoveryProductVariant;
   const languageCode = readConfiguration().bloomreachDiscoveryCatalogLocale;
   const variant = product.masterData.current.masterVariant;
 
@@ -208,7 +212,7 @@ function getMasterVariant(product: Product) {
     }
   });
 
-  brVariant[variant.id] = {
+  brVariant = {
     attributes: {
       ...attributesMap,
     }
@@ -239,10 +243,10 @@ function getCategoryTree(categories: CategoryReference[]) {
   return [brCategories];
 }
 
-function getAttribute(variant: BloomreachDiscoveryProductVariants, attr: String) {
-  if (variant[0]?.attributes?.hasOwnProperty(attr)) {
-    return "tset";//variant[0].attributes[attr];
+function getAttribute(variant: BloomreachDiscoveryProductVariant, attr: string) {
+  if (variant?.attributes?.hasOwnProperty(attr)) {
+    return variant.attributes[attr];
   } else {
-    return "test";
+    return '';
   }
 }
