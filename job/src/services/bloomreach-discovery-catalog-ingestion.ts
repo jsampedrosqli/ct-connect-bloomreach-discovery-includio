@@ -28,7 +28,7 @@ interface BloomreachDiscoveryProductAttrs {
   image: string;
   thumb_image: string; //mandatory discovery field
   url: string; //mandatory discovery field
-  category_paths: BrDiscoveryCategory[][]; //mandatory discovery field
+  category_paths: [BrDiscoveryCategory[]]; //mandatory discovery field
   brand: string; //mandatory discovery field
 }
 
@@ -114,7 +114,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
                   product.masterData.current.masterVariant.images?.[0]?.url ?? '',
               url: getAttribute(brVariant, 'url'),
               category_paths: getCategoryTree(product.masterData.current.categories),
-              //brand: getAttribute(brVariant, 'brand')
+              brand: getAttribute(brVariant, 'brand')
             },
             variants: getVariants(product),
             views: getProductViews(product),
