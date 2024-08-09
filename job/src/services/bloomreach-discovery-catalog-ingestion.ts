@@ -177,9 +177,6 @@ function getVariants(product: Product) {
   product.masterData.current.variants.forEach((variant) => {
     const attributesMap: Record<string, string> = {};
     variant.attributes?.forEach((attribute) => {
-      // if (attribute.value?.key) {
-      //   attributesMap[attribute.name] = attribute.value[readConfiguration().languageCode];
-      // }
       if (attribute.value.hasOwnProperty(languageCode)) {
         attributesMap[attribute.name] = attribute.value[languageCode];
       } else {
