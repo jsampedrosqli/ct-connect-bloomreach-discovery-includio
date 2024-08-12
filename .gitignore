@@ -10,5 +10,5 @@ build/
 .env
 .idea/
 tsconfig.tsbuildinfo
-job/node_modules/*
-job/build/*
+job/node_modules
+job/build

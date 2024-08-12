@@ -120,8 +120,10 @@ export async function bloomreachDiscoveryCatalogIngestion() {
               category_paths: getCategoryTree(product.masterData.current.categories),
               brand: getAttribute(brVariant, 'brand')
             },
-            variants: getVariants(product),
-            views: getProductViews(product),
+            variants: {},
+            views:  {}
+            // variants: getVariants(product),  // the pid is strange with this
+            // views: getProductViews(product),
           },
         };
       }) ?? [];
@@ -138,7 +140,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
   const res = await fetch(
     `https://api.connect.bloomreach.com/dataconnect/api/v1/accounts/${bloomreachDiscoveryAccountId}/catalogs/${bloomreachDiscoveryDomainKey}/products`,
     {
-      // method: 'PUT',
+      //method: 'PUT',
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json-patch+json',
