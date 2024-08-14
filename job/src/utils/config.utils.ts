@@ -24,7 +24,7 @@ export const readConfiguration = () => {
     bloomreachDiscoveryApiKey: process.env
       .BLOOMREACH_DISCOVERY_API_KEY as string,
     bloomreachDiscoveryCatalogLocale:
-      (process.env.BLOOMREACH_DISCOVERY_CATALOG_LOCALE as string) || 'en-US',
+      (process.env.BLOOMREACH_DISCOVERY_CATALOG_LOCALE as string) || 'en'
     // clientId: '5drM4Rt36wOh8Ss41jVXS6IW',
     // clientSecret: 'H5c-3UFQMCHTM7JfMBhV9N7sy51jkxvG',
     // projectKey: 'includio2',

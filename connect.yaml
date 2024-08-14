@@ -2,12 +2,18 @@ deployAs:
   - name: job
     applicationType: job
     endpoint: /job
+#    properties:
+#      schedule: "0 * * * *"
     properties:
-      schedule: "0 * * * *"
+      schedule: CRON_EXPRESSION
     configuration:
       standardConfiguration:
         - key: CTP_REGION
           description: commercetools Composable Commerce API region
+        - key: BLOOMREACH_DISCOVERY_CATALOG_LOCALE
+          description: Bloomreach Discovery Catalog Locale
+        - key: CRON_EXPRESSION
+          description: cron expression to schedule job
       securedConfiguration:
         - key: CTP_PROJECT_KEY
           description: commercetools Composable Commerce project key
@@ -25,5 +31,3 @@ deployAs:
           description: Bloomreach Discovery Domain Key
         - key: BLOOMREACH_DISCOVERY_API_KEY
           description: Bloomreach Discovery API Key
-        - key: BLOOMREACH_DISCOVERY_CATALOG_LOCALE
-          description: Bloomreach Discovery Catalog Locale
