@@ -3,15 +3,13 @@ deployAs:
     applicationType: job
     endpoint: /job
     properties:
-      schedule: "*/15 * * * *"
+      schedule: "0 0 * * *"
     configuration:
       standardConfiguration:
         - key: CTP_REGION
           description: commercetools Composable Commerce API region
         - key: BLOOMREACH_DISCOVERY_CATALOG_LOCALE
           description: Bloomreach Discovery Catalog Locale
-        - key: VERSION
-          description: version (optional)
       securedConfiguration:
         - key: CTP_PROJECT_KEY
           description: commercetools Composable Commerce project key
