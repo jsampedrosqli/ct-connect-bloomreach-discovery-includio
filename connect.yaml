@@ -14,6 +14,8 @@ deployAs:
           description: Bloomreach Discovery Catalog Locale
         - key: CRON_EXPRESSION
           description: cron expression to schedule job
+        - key: VERSION
+          description: version (optional)
       securedConfiguration:
         - key: CTP_PROJECT_KEY
           description: commercetools Composable Commerce project key
