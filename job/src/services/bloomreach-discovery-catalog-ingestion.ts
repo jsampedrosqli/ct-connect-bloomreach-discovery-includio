@@ -35,6 +35,7 @@ interface BloomreachDiscoveryProductAttrs {
 interface BrDiscoveryCategory {
   id?: string;
   name?: string;
+  slug?: string;
 }
 
 interface BloomreachDiscoveryProductVariant {
@@ -230,15 +231,18 @@ function getCategoryTree(categories: CategoryReference[]) {
   if (Array.isArray(categories) && categories.length !== 0) {
     brCategories[2] = {
       id: categories?.[0].obj?.key,
-      name: categories?.[0].obj?.name[langCode]
+      name: categories?.[0].obj?.name[langCode],
+      slug: categories?.[0].obj?.slug[langCode]
     }
     brCategories[1] = {
       id: categories?.[0].obj?.ancestors?.[1].obj?.key,
-      name: categories?.[0].obj?.ancestors?.[1].obj?.name[langCode]
+      name: categories?.[0].obj?.ancestors?.[1].obj?.name[langCode],
+      slug: categories?.[0].obj?.ancestors?.[1].obj?.slug[langCode]
     }
     brCategories[0] = {
       id: categories?.[0].obj?.ancestors?.[0].obj?.key,
-      name: categories?.[0].obj?.ancestors?.[0].obj?.name[langCode]
+      name: categories?.[0].obj?.ancestors?.[0].obj?.name[langCode],
+      slug: categories?.[0].obj?.ancestors?.[0].obj?.slug[langCode]
     }
   }
 

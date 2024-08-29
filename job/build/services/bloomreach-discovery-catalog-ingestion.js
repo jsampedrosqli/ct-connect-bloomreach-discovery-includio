@@ -142,21 +142,24 @@ function getVariants(product) {
     return variants;
 }
 function getCategoryTree(categories) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _r, _s, _t, _v, _w, _x, _y;
     const brCategories = [];
     const langCode = (0, config_utils_1.readConfiguration)().bloomreachDiscoveryCatalogLocale;
     if (Array.isArray(categories) && categories.length !== 0) {
         brCategories[2] = {
             id: (_a = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _a === void 0 ? void 0 : _a.key,
-            name: (_b = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _b === void 0 ? void 0 : _b.name[langCode]
+            name: (_b = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _b === void 0 ? void 0 : _b.name[langCode],
+            slug: (_r = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _r === void 0 ? void 0 : _r.slug[langCode]
         };
         brCategories[1] = {
             id: (_e = (_d = (_c = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _c === void 0 ? void 0 : _c.ancestors) === null || _d === void 0 ? void 0 : _d[1].obj) === null || _e === void 0 ? void 0 : _e.key,
-            name: (_h = (_g = (_f = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _f === void 0 ? void 0 : _f.ancestors) === null || _g === void 0 ? void 0 : _g[1].obj) === null || _h === void 0 ? void 0 : _h.name[langCode]
+            name: (_h = (_g = (_f = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _f === void 0 ? void 0 : _f.ancestors) === null || _g === void 0 ? void 0 : _g[1].obj) === null || _h === void 0 ? void 0 : _h.name[langCode],
+            slug: (_v = (_t = (_s = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _s === void 0 ? void 0 : _s.ancestors) === null || _t === void 0 ? void 0 : _t[1].obj) === null || _v === void 0 ? void 0 : _v.slug[langCode]
         };
         brCategories[0] = {
             id: (_l = (_k = (_j = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _j === void 0 ? void 0 : _j.ancestors) === null || _k === void 0 ? void 0 : _k[0].obj) === null || _l === void 0 ? void 0 : _l.key,
-            name: (_p = (_o = (_m = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _m === void 0 ? void 0 : _m.ancestors) === null || _o === void 0 ? void 0 : _o[0].obj) === null || _p === void 0 ? void 0 : _p.name[langCode]
+            name: (_p = (_o = (_m = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _m === void 0 ? void 0 : _m.ancestors) === null || _o === void 0 ? void 0 : _o[0].obj) === null || _p === void 0 ? void 0 : _p.name[langCode],
+            slug: (_y = (_x = (_w = categories === null || categories === void 0 ? void 0 : categories[0].obj) === null || _w === void 0 ? void 0 : _w.ancestors) === null || _x === void 0 ? void 0 : _x[0].obj) === null || _y === void 0 ? void 0 : _y.slug[langCode]
         };
     }
     return [brCategories];
