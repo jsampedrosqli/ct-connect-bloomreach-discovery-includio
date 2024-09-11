@@ -224,17 +224,22 @@ function getMasterVariant(product: Product) {
   return brVariant;
 }
 
+function isValidArray<T>(array: T[]) {
+  return Array.isArray(array) && array.length !== 0;
+}
+
 function getCategoryTree(ctCategories: CategoryReference[]) {
 
   const brCategories: BrDiscoveryCategory[][] = [];
   const langCode = readConfiguration().bloomreachDiscoveryCatalogLocale;
 
   if (isValidArray(ctCategories)) {
+    
+    let categoryIndex = 0;
     for (const categoryReference of ctCategories) {
-
+      
       const brCategory: BrDiscoveryCategory[] = [];
       const ctAncestors = categoryReference.obj?.ancestors;
-      let categoryIndex = 0;
 
       if (ctAncestors !== undefined && isValidArray(ctAncestors)) {
 
