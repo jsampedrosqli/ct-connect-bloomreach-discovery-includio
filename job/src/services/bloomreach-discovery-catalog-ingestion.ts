@@ -224,29 +224,50 @@ function getMasterVariant(product: Product) {
   return brVariant;
 }
 
-function getCategoryTree(categories: CategoryReference[]) {
-  const brCategories: BrDiscoveryCategory[] = [];
+function isValidArray<T>(array: T[]) {
+  return Array.isArray(array) && array.length !== 0;
+}
+
+function getCategoryTree(ctCategories: CategoryReference[]) {
+
+  const brCategories: BrDiscoveryCategory[][] = [];
   const langCode = readConfiguration().bloomreachDiscoveryCatalogLocale;
 
-  if (Array.isArray(categories) && categories.length !== 0) {
-    brCategories[2] = {
-      id: categories?.[0].obj?.key,
-      name: categories?.[0].obj?.name[langCode],
-      slug: categories?.[0].obj?.slug[langCode]
-    }
-    brCategories[1] = {
-      id: categories?.[0].obj?.ancestors?.[1].obj?.key,
-      name: categories?.[0].obj?.ancestors?.[1].obj?.name[langCode],
-      slug: categories?.[0].obj?.ancestors?.[1].obj?.slug[langCode]
-    }
-    brCategories[0] = {
-      id: categories?.[0].obj?.ancestors?.[0].obj?.key,
-      name: categories?.[0].obj?.ancestors?.[0].obj?.name[langCode],
-      slug: categories?.[0].obj?.ancestors?.[0].obj?.slug[langCode]
+  if (isValidArray(ctCategories)) {
+    
+    let categoryIndex = 0;
+    for (const categoryReference of ctCategories) {
+      
+      const brCategory: BrDiscoveryCategory[] = [];
+      const ctAncestors = categoryReference.obj?.ancestors;
+
+      if (ctAncestors !== undefined && isValidArray(ctAncestors)) {
+
+        let ancestorIndex = 0;
+        for (const ctAncestor of ctAncestors) {
+          brCategory[ancestorIndex] = {
+            id: ctAncestor?.obj?.key,
+            name: ctAncestor?.obj?.name[langCode],
+            slug: ctAncestor?.obj?.slug[langCode]
+          }
+          ancestorIndex++;
+        }
+
+        const ctCategory = categoryReference.obj;
+        brCategory[ancestorIndex] = {
+          id: ctCategory?.key,
+          name: ctCategory?.name[langCode],
+          slug: ctCategory?.slug[langCode]
+        }
+
+        brCategories[categoryIndex] = [];
+        brCategories[categoryIndex].push(...brCategory)
+        categoryIndex++;
+      }
     }
   }
 
-  return [brCategories];
+  return brCategories;
 }
 
 function getAttribute(variant: BloomreachDiscoveryProductVariant, attr: string) {
