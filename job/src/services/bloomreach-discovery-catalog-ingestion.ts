@@ -30,6 +30,7 @@ interface BloomreachDiscoveryProductAttrs {
   url: string; //mandatory discovery field
   category_paths: BrDiscoveryCategory[][]; //mandatory discovery field
   brand: string; //mandatory discovery field
+  availability: boolean;
 }
 
 interface BrDiscoveryCategory {
@@ -98,7 +99,8 @@ export async function bloomreachDiscoveryCatalogIngestion() {
     }
 
     const data: BloomreachProduct[] =
-      response?.body.results.map((product) => {
+      response?.body.results
+      .map((product) => {
         const brVariant = getMasterVariant(product);
         return {
           op: 'add',
@@ -119,7 +121,8 @@ export async function bloomreachDiscoveryCatalogIngestion() {
                   product.masterData.current.masterVariant.images?.[0]?.url ?? '',
               url: getAttribute(brVariant, 'url'),
               category_paths: getCategoryTree(product.masterData.current.categories),
-              brand: getAttribute(brVariant, 'brand')
+              brand: getAttribute(brVariant, 'brand'),
+              availability: product.masterData.published
             },
             variants: {},
             views:  {}
@@ -129,7 +132,10 @@ export async function bloomreachDiscoveryCatalogIngestion() {
         };
       }) ?? [];
 
-    products.push(...data);
+    const filteredProducts: BloomreachProduct[] = data.filter(value => isValidProduct(value));
+
+    products.push(...filteredProducts)
+
     if (products.length >= (response?.body.total ?? 0)) {
       _continue = false;
     }
@@ -138,11 +144,39 @@ export async function bloomreachDiscoveryCatalogIngestion() {
       response?.body.results[response.body.results.length - 1]?.id ?? null;
   }
 
+  function isValidProduct(product: BloomreachProduct) {
+
+    function isEmptyAttribute(product: BloomreachProduct, attributeName: string) {
+
+      const attributes = product?.value?.attributes;
+
+      if (!attributes || !(attributeName in attributes)) {
+        return true;
+      }
+
+      const attributeValue = attributes[attributeName as keyof typeof attributes];
+
+      if ((typeof attributeValue === "string" && attributeValue.trim().length === 0) ||
+          (typeof attributeValue === "number" && attributeValue <= 0) ||
+          (Array.isArray(attributeValue) && attributeValue.length === 0)) {
+        return true;
+      }
+
+      return false;
+
+    }
+
+    const mandatoryAttributes: string[] = ['title', 'sku', 'description', 'slug', 'price', 'image', 'thumb_image', 'url', 'brand'];
+
+    return mandatoryAttributes.filter(attribute => !isEmptyAttribute(product, attribute)).length === mandatoryAttributes.length;
+
+  }
+
   const res = await fetch(
     `https://api.connect.bloomreach.com/dataconnect/api/v1/accounts/${bloomreachDiscoveryAccountId}/catalogs/${bloomreachDiscoveryDomainKey}/products`,
     {
-      //method: 'PUT',
-      method: 'PATCH',
+      method: 'PUT',
+      // method: 'PATCH',
       headers: {
         'Content-Type': 'application/json-patch+json',
         Authorization: `Bearer ${bloomreachDiscoveryApiKey}`,
