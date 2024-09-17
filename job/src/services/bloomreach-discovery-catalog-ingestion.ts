@@ -30,6 +30,7 @@ interface BloomreachDiscoveryProductAttrs {
   url: string; //mandatory discovery field
   category_paths: BrDiscoveryCategory[][]; //mandatory discovery field
   brand: string; //mandatory discovery field
+  availability: boolean;
 }
 
 interface BrDiscoveryCategory {
@@ -99,7 +100,6 @@ export async function bloomreachDiscoveryCatalogIngestion() {
 
     const data: BloomreachProduct[] =
       response?.body.results
-      .filter(value => value.masterData.published)
       .map((product) => {
         const brVariant = getMasterVariant(product);
         return {
@@ -121,7 +121,8 @@ export async function bloomreachDiscoveryCatalogIngestion() {
                   product.masterData.current.masterVariant.images?.[0]?.url ?? '',
               url: getAttribute(brVariant, 'url'),
               category_paths: getCategoryTree(product.masterData.current.categories),
-              brand: getAttribute(brVariant, 'brand')
+              brand: getAttribute(brVariant, 'brand'),
+              availability: product.masterData.published
             },
             variants: {},
             views:  {}
