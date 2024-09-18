@@ -168,6 +168,10 @@ export async function bloomreachDiscoveryCatalogIngestion() {
 
     const mandatoryAttributes: string[] = ['title', 'sku', 'description', 'slug', 'price', 'image', 'thumb_image', 'url', 'brand'];
 
+    const invalidAttributes: string[] = mandatoryAttributes.filter(attribute => isEmptyAttribute(product, attribute))
+    logger.info('DEBUG: Product "' + product?.value?.attributes.sku + '". Invalid mandatory fields: ' + (invalidAttributes.length !== 0 ? invalidAttributes : 'NONE'))
+    logger.info('DEBUG: ' + JSON.stringify(product))
+
     return mandatoryAttributes.filter(attribute => !isEmptyAttribute(product, attribute)).length === mandatoryAttributes.length;
 
   }
