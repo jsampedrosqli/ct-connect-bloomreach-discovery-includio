@@ -31,6 +31,13 @@ interface BloomreachDiscoveryProductAttrs {
   category_paths: BrDiscoveryCategory[][]; //mandatory discovery field
   brand: string; //mandatory discovery field
   availability: boolean;
+  // Optional fields
+  weight: number | null;
+  connectivity: string[] | null;
+  display_resolution: string[] | null;
+  magnification_max: number | null;
+  magnification_min: number | null;
+  nav_toggle_switches: boolean | null;
 }
 
 interface BrDiscoveryCategory {
@@ -40,7 +47,7 @@ interface BrDiscoveryCategory {
 }
 
 interface BloomreachDiscoveryProductVariant {
-  attributes: Record<string, string>;
+  attributes: Record<string, unknown>;
 }
 
 interface BloomreachDiscoveryProductVariants {
@@ -88,7 +95,21 @@ export async function bloomreachDiscoveryCatalogIngestion() {
     }
   );
 
-  // https://docs.commercetools.com/api/general-concepts#iterating-over-all-elements
+  function getPrice(product: Product): number {
+    const priceInfo = product?.masterData?.current?.masterVariant?.prices?.[0]?.value;
+
+    if (priceInfo && typeof priceInfo.centAmount === 'number' && typeof priceInfo.fractionDigits === 'number') {
+      return priceInfo.centAmount / Math.pow(10, priceInfo.fractionDigits);
+    }
+
+    return 0;
+  }
+
+  function getUrl(product: Product) {
+    return 'https://includio.osudio.com/detail/' + product.key;
+  }
+
+// https://docs.commercetools.com/api/general-concepts#iterating-over-all-elements
   while (_continue) {
     let response: ClientResponse<ProductPagedQueryResponse> | null = null;
 
@@ -112,17 +133,21 @@ export async function bloomreachDiscoveryCatalogIngestion() {
               description:
                 product.masterData.current.description?.[locale] ?? '',
               slug: product.masterData.current.slug[locale] ?? '',
-              price:
-                product.masterData.current.masterVariant.prices?.[0]?.value
-                  .centAmount ?? 0,
+              price: getPrice(product),
               image:
                 product.masterData.current.masterVariant.images?.[0]?.url ?? '',
               thumb_image:
                   product.masterData.current.masterVariant.images?.[0]?.url ?? '',
-              url: getAttribute(brVariant, 'url'),
+              url: getUrl(product),
               category_paths: getCategoryTree(product.masterData.current.categories),
-              brand: getAttribute(brVariant, 'brand'),
-              availability: product.masterData.published
+              brand: <string>getAttribute(brVariant, 'brand'),
+              availability: product.masterData.published,
+              weight: <number>getOptionalAttribute(brVariant, 'weight', false),
+              connectivity: <string[]>getOptionalAttribute(brVariant, 'connectivity', true),
+              display_resolution: <string[]>getOptionalAttribute(brVariant, 'display_resolution', true),
+              magnification_max: <number>getOptionalAttribute(brVariant, 'magnification_max', false),
+              magnification_min: <number>getOptionalAttribute(brVariant, 'magnification_min', false),
+              nav_toggle_switches: <boolean>getOptionalAttribute(brVariant, 'nav_toggle_switches', false)
             },
             variants: {},
             views:  {}
@@ -240,7 +265,7 @@ function getMasterVariant(product: Product) {
   const languageCode = readConfiguration().bloomreachDiscoveryCatalogLocale;
   const variant = product.masterData.current.masterVariant;
 
-  const attributesMap: Record<string, string> = {};
+  const attributesMap: Record<string, unknown> = {};
   variant.attributes?.forEach((attribute) => {
     if (attribute.value.hasOwnProperty(languageCode)) {
       attributesMap[attribute.name] = attribute.value[languageCode];
@@ -310,4 +335,26 @@ function getAttribute(variant: BloomreachDiscoveryProductVariant, attr: string) 
   } else {
     return '';
   }
+}
+
+function getOptionalAttribute(variant: BloomreachDiscoveryProductVariant, attr: string, isMultivalue: boolean) {
+  if (variant?.attributes?.hasOwnProperty(attr) && variant.attributes[attr] !== '') {
+    if (!isMultivalue) {
+      return variant.attributes[attr];
+    } else {
+      return extractLabels(<object[]>variant.attributes[attr]);
+    }
+  } else {
+    return null;
+  }
+}
+
+function extractLabels(items: Object[]): string[] {
+  return items.map(item => {
+
+    if (item.hasOwnProperty('label') && typeof (item as any).label === 'string') {
+      return (item as any).label;
+    }
+    return '';
+  });
 }
