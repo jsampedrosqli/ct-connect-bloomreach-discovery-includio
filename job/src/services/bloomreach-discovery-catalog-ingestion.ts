@@ -191,7 +191,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
 
     }
 
-    const mandatoryAttributes: string[] = ['title', 'sku', 'description', 'slug', 'price', 'image', 'thumb_image', 'url', 'brand'];
+    const mandatoryAttributes: string[] = ['title', 'sku', 'description', 'slug', 'price', 'image', 'thumb_image', 'url', 'brand', 'category_paths'];
 
     return mandatoryAttributes.filter(attribute => !isEmptyAttribute(product, attribute)).length === mandatoryAttributes.length;
 
