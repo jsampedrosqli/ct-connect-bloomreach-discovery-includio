@@ -34,7 +34,7 @@ interface BloomreachDiscoveryProductAttrs {
   // Optional fields
   weight: number | null;
   connectivity: string[] | null;
-  display_resolution: string[] | null;
+  screen_size: number | null;
   magnification_max: number | null;
   magnification_min: number | null;
   nav_toggle_switches: boolean | null;
@@ -144,7 +144,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
               availability: product.masterData.published,
               weight: <number>getOptionalAttribute(brVariant, 'weight', false),
               connectivity: <string[]>getOptionalAttribute(brVariant, 'connectivity', true),
-              display_resolution: <string[]>getOptionalAttribute(brVariant, 'display_resolution', true),
+              screen_size: <number>getOptionalAttribute(brVariant, 'screen_size', false),
               magnification_max: <number>getOptionalAttribute(brVariant, 'magnification_max', false),
               magnification_min: <number>getOptionalAttribute(brVariant, 'magnification_min', false),
               nav_toggle_switches: <boolean>getOptionalAttribute(brVariant, 'nav_toggle_switches', false)
