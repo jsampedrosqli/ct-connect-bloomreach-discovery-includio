@@ -3,13 +3,15 @@ deployAs:
     applicationType: job
     endpoint: /job
     properties:
-      schedule: "0 0 * * *"
+      schedule: "${SCHEDULE_CRON}"
     configuration:
       standardConfiguration:
         - key: CTP_REGION
           description: commercetools Composable Commerce API region
         - key: BLOOMREACH_DISCOVERY_CATALOG_LOCALE
           description: Bloomreach Discovery Catalog Locale
+        - key: SCHEDULE_CRON
+          description: Define a Cron Expression for scheduling the job (eg Midnight. 0 0 * * *)
       securedConfiguration:
         - key: CTP_PROJECT_KEY
           description: commercetools Composable Commerce project key
