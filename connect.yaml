@@ -2,6 +2,8 @@ deployAs:
   - name: job
     applicationType: job
     endpoint: /job
+    properties:
+      schedule: "0 0 * * ? 9999"
     configuration:
       standardConfiguration:
         - key: CTP_REGION
