@@ -13,9 +13,14 @@ import { bloomreachDiscoveryCatalogIngestion } from '../services/bloomreach-disc
 export const post = async (_request: Request, response: Response) => {
   try {
     logger.info(`Running the Bloomreach Discovery Job`);
-    await bloomreachDiscoveryCatalogIngestion();
-    logger.info(`Running the Bloomreach Discovery Job >> SUCCESS`);
-    response.status(200).send();
+    const execute = await _request.query.execute;
+    if (execute === "true") {
+      await bloomreachDiscoveryCatalogIngestion();
+      logger.info(`Running the Bloomreach Discovery Job >> SUCCESS`);
+      response.status(200).send();
+    } else {
+      logger.info(`Running the Bloomreach Discovery Job >> SKIPPED`);
+    }
   } catch (error) {
     logger.info(`Running the Bloomreach Discovery Job >> FAILURE`);
     const err = error as unknown as Error;
