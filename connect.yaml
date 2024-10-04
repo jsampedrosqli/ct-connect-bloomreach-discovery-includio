@@ -3,7 +3,7 @@ deployAs:
     applicationType: job
     endpoint: /job
     properties:
-      schedule: "${SCHEDULE_CRON}"
+      schedule: "${SCHEDULE_CRON:0 0 * * *}"
     configuration:
       standardConfiguration:
         - key: CTP_REGION
