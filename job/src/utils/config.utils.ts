@@ -24,7 +24,8 @@ export const readConfiguration = () => {
     bloomreachDiscoveryApiKey: process.env
       .BLOOMREACH_DISCOVERY_API_KEY as string,
     bloomreachDiscoveryCatalogLocale:
-      (process.env.BLOOMREACH_DISCOVERY_CATALOG_LOCALE as string) || 'en'
+      (process.env.BLOOMREACH_DISCOVERY_CATALOG_LOCALE as string) || 'en',
+    scheduleCron: process.env.SCHEDULE_CRON as string || '0 0 * * *'
   };
 
   const validationErrors = getValidateMessages(envValidators, envVars);
