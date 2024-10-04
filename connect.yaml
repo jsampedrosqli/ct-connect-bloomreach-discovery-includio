@@ -12,20 +12,20 @@ deployAs:
           description: Bloomreach Discovery Catalog Locale
         - key: SCHEDULE_CRON
           description: Define a Cron Expression for scheduling the job (eg Midnight. 0 0 * * *)
-      securedConfiguration:
         - key: CTP_PROJECT_KEY
           description: commercetools Composable Commerce project key
+        - key: BLOOMREACH_DISCOVERY_ACCOUNT_ID
+          description: Bloomreach Discovery Account Id
+        - key: BLOOMREACH_DISCOVERY_DOMAIN_KEY
+          description: Bloomreach Discovery Domain Key
+      securedConfiguration:
         - key: CTP_CLIENT_ID
           description: commercetools Composable Commerce client ID
         - key: CTP_CLIENT_SECRET
           description: commercetools Composable Commerce client secret
         - key: CTP_SCOPE
           description: commercetools Composable Commerce client scope
-        - key: BLOOMREACH_DISCOVERY_ACCOUNT_ID
-          description: Bloomreach Discovery Account Id
         - key: BLOOMREACH_DISCOVERY_AUTH_KEY
           description: Bloomreach Discovery Auth Key
-        - key: BLOOMREACH_DISCOVERY_DOMAIN_KEY
-          description: Bloomreach Discovery Domain Key
         - key: BLOOMREACH_DISCOVERY_API_KEY
           description: Bloomreach Discovery API Key

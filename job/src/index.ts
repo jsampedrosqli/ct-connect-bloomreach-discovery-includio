@@ -40,11 +40,11 @@ const server = app.listen(PORT, () => {
 
 const runJob = async () => {
   try {
-    logger.info('Iniciando job desde cronjob...');
+    logger.info('Running the Bloomreach Discovery Job (Custom CronExpression)');
     await bloomreachDiscoveryCatalogIngestion();
-    logger.info('Job ejecutado correctamente desde cronjob');
+    logger.info('Running the Bloomreach Discovery Job >> SUCCESS');
   } catch (error) {
-    logger.error('Error ejecutando el job desde cronjob:', error);
+    logger.error('Running the Bloomreach Discovery Job >> FAILURE', error);
   }
 }
 
