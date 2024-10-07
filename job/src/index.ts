@@ -12,8 +12,14 @@ import { logger } from './utils/logger.utils';
 import { readConfiguration } from './utils/config.utils';
 import { errorMiddleware } from './middleware/error.middleware';
 
+import cron from 'node-cron';
+
+// Import Ingestion
+import { bloomreachDiscoveryCatalogIngestion } from './services/bloomreach-discovery-catalog-ingestion';
+
+
 // Read env variables
-readConfiguration();
+const envParams = readConfiguration();
 
 const PORT = 8080;
 
@@ -31,5 +37,15 @@ app.use(errorMiddleware);
 const server = app.listen(PORT, () => {
   logger.info(`⚡️ Job application listening on port ${PORT}`);
 });
+
+cron.schedule(envParams.scheduleCron, async () => {
+  try {
+    logger.info('Running the Bloomreach Discovery Job (Custom CronExpression)');
+    await bloomreachDiscoveryCatalogIngestion();
+    logger.info('Running the Bloomreach Discovery Job >> SUCCESS');
+  } catch (error) {
+    logger.error('Running the Bloomreach Discovery Job >> FAILURE', error);
+  }
+})
 
 export default server;
