@@ -19,7 +19,7 @@ export const post = async (_request: Request, response: Response) => {
       logger.info(`Running the Bloomreach Discovery Job >> SUCCESS`);
       response.status(200).send();
     } else {
-      logger.info(`Running the Bloomreach Discovery Job >> SKIPPED`);
+      // No action when skip to execute the ingestion
     }
   } catch (error) {
     logger.info(`Running the Bloomreach Discovery Job >> FAILURE`);
