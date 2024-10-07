@@ -38,7 +38,7 @@ const server = app.listen(PORT, () => {
   logger.info(`⚡️ Job application listening on port ${PORT}`);
 });
 
-const runJob = async () => {
+cron.schedule(envParams.scheduleCron, async () => {
   try {
     logger.info('Running the Bloomreach Discovery Job (Custom CronExpression)');
     await bloomreachDiscoveryCatalogIngestion();
@@ -46,8 +46,6 @@ const runJob = async () => {
   } catch (error) {
     logger.error('Running the Bloomreach Discovery Job >> FAILURE', error);
   }
-}
-
-cron.schedule(envParams.scheduleCron, () => runJob())
+})
 
 export default server;
