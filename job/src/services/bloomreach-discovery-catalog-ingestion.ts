@@ -2,6 +2,7 @@ import Bottleneck from 'bottleneck';
 import {
   CategoryReference,
   ClientResponse,
+  Price,
   Product,
   ProductPagedQueryResponse,
 } from '@commercetools/platform-sdk';
@@ -96,13 +97,58 @@ export async function bloomreachDiscoveryCatalogIngestion() {
   );
 
   function getPrice(product: Product): number {
-    const priceInfo = product?.masterData?.current?.masterVariant?.prices?.[0]?.value;
 
-    if (priceInfo && typeof priceInfo.centAmount === 'number' && typeof priceInfo.fractionDigits === 'number') {
-      return priceInfo.centAmount / Math.pow(10, priceInfo.fractionDigits);
+    const validPrice = pickValidPrice(product)
+
+    if(validPrice !== undefined) {
+      return validPrice.value.centAmount / Math.pow(10, validPrice.value.fractionDigits);
     }
 
     return 0;
+
+    function pickValidPrice(product: Product) : Price | undefined {
+
+      let validPrice = undefined
+
+      const numPrices = product?.masterData?.current?.masterVariant?.prices?.length
+
+      for (let i = 0; numPrices !== undefined && numPrices > i; i++) {
+
+        const validFrom = product?.masterData?.current?.masterVariant?.prices?.[i].validFrom
+        const validUntil = product?.masterData?.current?.masterVariant?.prices?.[i].validUntil
+
+        if (validFrom === undefined && validUntil === undefined) {
+          validPrice = product?.masterData?.current?.masterVariant?.prices?.[i]
+          break
+        }
+
+        const validFromDate = getValidityDate(validFrom)
+        const validUntilDate = getValidityDate(validUntil)
+
+        if (validFromDate !== undefined && validFromDate > Date.now()) {
+          continue
+        }
+        if (validUntilDate !== undefined && validUntilDate < Date.now()) {
+          continue
+        }
+
+        validPrice = product?.masterData?.current?.masterVariant?.prices?.[i]
+        break
+      }
+
+      return validPrice
+
+    }
+
+    function getValidityDate(date: string | undefined) {
+
+      if (date !== undefined && date?.trim().length > 0) {
+        return Date.parse(date)
+      }
+
+      return undefined
+    }
+
   }
 
   function getUrl(product: Product) {
