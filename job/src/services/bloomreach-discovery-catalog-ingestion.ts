@@ -100,7 +100,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
 
     const validPrice = pickValidPrice(product)
 
-    if(validPrice !== undefined) {
+    if(validPrice) {
       return validPrice.value.centAmount / Math.pow(10, validPrice.value.fractionDigits);
     }
 
