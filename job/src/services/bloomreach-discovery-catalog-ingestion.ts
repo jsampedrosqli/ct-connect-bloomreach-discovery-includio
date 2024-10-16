@@ -110,29 +110,29 @@ export async function bloomreachDiscoveryCatalogIngestion() {
 
       let validPrice = undefined
 
-      const numPrices = product?.masterData?.current?.masterVariant?.prices?.length
+      const prices = product?.masterData?.current?.masterVariant?.prices;
 
-      for (let i = 0; numPrices !== undefined && numPrices > i; i++) {
+      for (let i = 0; prices && prices.length > i; i++) {
 
-        const validFrom = product?.masterData?.current?.masterVariant?.prices?.[i].validFrom
-        const validUntil = product?.masterData?.current?.masterVariant?.prices?.[i].validUntil
+        const validFrom = prices[i].validFrom
+        const validUntil = prices[i].validUntil
 
-        if (validFrom === undefined && validUntil === undefined) {
-          validPrice = product?.masterData?.current?.masterVariant?.prices?.[i]
+        if (!validFrom && !validUntil) {
+          validPrice = prices[i]
           break
         }
 
         const validFromDate = getValidityDate(validFrom)
         const validUntilDate = getValidityDate(validUntil)
 
-        if (validFromDate !== undefined && validFromDate > Date.now()) {
+        if (validFromDate && validFromDate > Date.now()) {
           continue
         }
-        if (validUntilDate !== undefined && validUntilDate < Date.now()) {
+        if (validUntilDate && validUntilDate < Date.now()) {
           continue
         }
 
-        validPrice = product?.masterData?.current?.masterVariant?.prices?.[i]
+        validPrice = prices[i]
         break
       }
 
@@ -142,7 +142,7 @@ export async function bloomreachDiscoveryCatalogIngestion() {
 
     function getValidityDate(date: string | undefined) {
 
-      if (date !== undefined && date?.trim().length > 0) {
+      if (date && date.trim().length > 0) {
         return Date.parse(date)
       }
 
