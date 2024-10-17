@@ -2,6 +2,7 @@ import Bottleneck from 'bottleneck';
 import {
   CategoryReference,
   ClientResponse,
+  Price,
   Product,
   ProductPagedQueryResponse,
 } from '@commercetools/platform-sdk';
@@ -96,13 +97,58 @@ export async function bloomreachDiscoveryCatalogIngestion() {
   );
 
   function getPrice(product: Product): number {
-    const priceInfo = product?.masterData?.current?.masterVariant?.prices?.[0]?.value;
 
-    if (priceInfo && typeof priceInfo.centAmount === 'number' && typeof priceInfo.fractionDigits === 'number') {
-      return priceInfo.centAmount / Math.pow(10, priceInfo.fractionDigits);
+    const validPrice = pickValidPrice(product)
+
+    if(validPrice) {
+      return validPrice.value.centAmount / Math.pow(10, validPrice.value.fractionDigits);
     }
 
     return 0;
+
+    function pickValidPrice(product: Product) : Price | undefined {
+
+      let validPrice = undefined
+
+      const prices = product?.masterData?.current?.masterVariant?.prices;
+
+      for (let i = 0; prices && prices.length > i; i++) {
+
+        const validFrom = prices[i].validFrom
+        const validUntil = prices[i].validUntil
+
+        if (!validFrom && !validUntil) {
+          validPrice = prices[i]
+          break
+        }
+
+        const validFromDate = getValidityDate(validFrom)
+        const validUntilDate = getValidityDate(validUntil)
+
+        if (validFromDate && validFromDate > Date.now()) {
+          continue
+        }
+        if (validUntilDate && validUntilDate < Date.now()) {
+          continue
+        }
+
+        validPrice = prices[i]
+        break
+      }
+
+      return validPrice
+
+    }
+
+    function getValidityDate(date: string | undefined) {
+
+      if (date && date.trim().length > 0) {
+        return Date.parse(date)
+      }
+
+      return undefined
+    }
+
   }
 
   function getUrl(product: Product) {
